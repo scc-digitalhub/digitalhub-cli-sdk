@@ -1,0 +1,12 @@
+{
+    "resources": {
+        "artifacts": "artifact",
+        "dataitems": "dataitem",
+        "functions": "function, fn",
+        "models": "model",
+        "projects": "project",
+        "runs": "run",
+        "workflows": "workflow",
+        "logs": "log"
+    }
+}
