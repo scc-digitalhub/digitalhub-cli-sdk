@@ -24,5 +24,5 @@ It provides programmatic access to the same capabilities offered by the DigitalH
 ## 📦 Installation
 
 ```bash
-go get github.com/scc-digitalhub/digitalhub-cli-sdk/sdk
+go get github.com/scc-digitalhub/digitalhub-cli-sdk
 ```
