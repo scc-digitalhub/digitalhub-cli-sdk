@@ -20,6 +20,6 @@ func (s *CrudService) Get(ctx context.Context, req GetRequest) ([]byte, int, err
 		params["versions"] = "latest"
 	}
 
-	url := s.http.BuildURL(req.Project, req.Endpoint, req.ID, params)
+	url := s.http.BuildURL(req.Project, req.Resource, req.ID, params)
 	return s.http.Do(ctx, "GET", url, nil)
 }

@@ -23,7 +23,7 @@ func (s *RunService) PrintMetrics(ctx context.Context, req MetricsRequest) error
 	if req.Project == "" {
 		return errors.New("project not specified")
 	}
-	if req.Endpoint == "" {
+	if req.Resource == "" {
 		return errors.New("endpoint not specified")
 	}
 	if req.ID == "" {
@@ -76,7 +76,7 @@ func (s *RunService) getContainerLog(
 ) (map[string]interface{}, error) {
 
 	// 1) GET logs
-	url := s.http.BuildURL(req.Project, req.Endpoint, req.ID, nil) + "/logs"
+	url := s.http.BuildURL(req.Project, req.Resource, req.ID, nil) + "/logs"
 	body, status, err := s.http.Do(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("logs request failed (status %d): %w", status, err)
@@ -90,7 +90,7 @@ func (s *RunService) getContainerLog(
 	// 2) Determine container name (se non specificato)
 	containerName := container
 	if containerName == "" {
-		urlRes := s.http.BuildURL(req.Project, req.Endpoint, req.ID, nil)
+		urlRes := s.http.BuildURL(req.Project, req.Resource, req.ID, nil)
 		resBody, status, err := s.http.Do(ctx, "GET", urlRes, nil)
 		if err != nil {
 			return nil, fmt.Errorf("resource request failed (status %d): %w", status, err)

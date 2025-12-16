@@ -11,20 +11,20 @@ import (
 )
 
 func (s *CrudService) Update(ctx context.Context, req UpdateRequest) error {
-	if req.Endpoint == "" {
+	if req.Resource == "" {
 		return errors.New("endpoint is required")
 	}
 	if req.ID == "" {
 		return errors.New("id is required")
 	}
-	if req.Endpoint != "projects" && req.Project == "" {
+	if req.Resource != "projects" && req.Project == "" {
 		return errors.New("project is mandatory for non-project resources")
 	}
 	if len(req.Body) == 0 {
 		return errors.New("empty body")
 	}
 
-	url := s.http.BuildURL(req.Project, req.Endpoint, req.ID, nil)
+	url := s.http.BuildURL(req.Project, req.Resource, req.ID, nil)
 	_, status, err := s.http.Do(ctx, "PUT", url, req.Body)
 	if err != nil {
 		return fmt.Errorf("update failed (status %d): %w", status, err)

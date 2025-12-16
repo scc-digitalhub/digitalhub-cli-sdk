@@ -42,7 +42,7 @@ func TestProjectsList(t *testing.T) {
 	elements, _, err := svc.ListAllPages(ctx, crud.ListRequest{
 		ResourceRequest: crud.ResourceRequest{
 			Project:  "gen-art2",
-			Endpoint: "artifacts",
+			Resource: "artifacts",
 		},
 		Params: map[string]string{},
 	})

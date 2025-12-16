@@ -26,7 +26,7 @@ func (s *CrudService) ListAllPages(ctx context.Context, req ListRequest) ([]inte
 	}
 
 	for {
-		url := s.http.BuildURL(req.Project, req.Endpoint, "", pageParams)
+		url := s.http.BuildURL(req.Project, req.Resource, "", pageParams)
 		body, status, err := s.http.Do(ctx, "GET", url, nil)
 		if err != nil {
 			return nil, 0, err

@@ -7,7 +7,7 @@ package crud
 // usata embedded nelle altre request
 type ResourceRequest struct {
 	Project  string // obbligatorio per risorse != "projects"
-	Endpoint string // "projects", "artifacts", ...
+	Resource string // "projects", "artifacts", ...
 }
 
 type CreateRequest struct {

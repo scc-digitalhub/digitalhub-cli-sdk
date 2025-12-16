@@ -15,14 +15,14 @@ func (s *RunService) GetLogs(ctx context.Context, req LogRequest) ([]byte, int, 
 	if req.Project == "" {
 		return nil, 0, errors.New("project not specified")
 	}
-	if req.Endpoint == "" {
+	if req.Resource == "" {
 		return nil, 0, errors.New("endpoint not specified")
 	}
 	if req.ID == "" {
 		return nil, 0, errors.New("id not specified")
 	}
 
-	url := s.http.BuildURL(req.Project, req.Endpoint, req.ID, nil) + "/logs"
+	url := s.http.BuildURL(req.Project, req.Resource, req.ID, nil) + "/logs"
 	b, status, err := s.http.Do(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, status, fmt.Errorf("get logs failed (status %d): %w", status, err)
@@ -36,14 +36,14 @@ func (s *RunService) GetResource(ctx context.Context, req LogRequest) ([]byte, i
 	if req.Project == "" {
 		return nil, 0, errors.New("project not specified")
 	}
-	if req.Endpoint == "" {
+	if req.Resource == "" {
 		return nil, 0, errors.New("endpoint not specified")
 	}
 	if req.ID == "" {
 		return nil, 0, errors.New("id not specified")
 	}
 
-	url := s.http.BuildURL(req.Project, req.Endpoint, req.ID, nil)
+	url := s.http.BuildURL(req.Project, req.Resource, req.ID, nil)
 	b, status, err := s.http.Do(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, status, fmt.Errorf("get resource failed (status %d): %w", status, err)

@@ -16,14 +16,14 @@ func (s *RunService) Resume(ctx context.Context, req ResumeRequest) ([]byte, int
 	if req.Project == "" {
 		return nil, 0, errors.New("project not specified")
 	}
-	if req.Endpoint == "" {
+	if req.Resource == "" {
 		return nil, 0, errors.New("endpoint not specified")
 	}
 	if req.ID == "" {
 		return nil, 0, errors.New("id not specified")
 	}
 
-	url := s.http.BuildURL(req.Project, req.Endpoint, req.ID, nil) + "/resume"
+	url := s.http.BuildURL(req.Project, req.Resource, req.ID, nil) + "/resume"
 	b, status, err := s.http.Do(ctx, "POST", url, nil)
 	if err != nil {
 		return nil, status, fmt.Errorf("resume request failed (status %d): %w", status, err)

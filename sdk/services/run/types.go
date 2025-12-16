@@ -7,7 +7,7 @@ package run
 // Base comune per tutte le operazioni su una risorsa "run-like"
 type RunResourceRequest struct {
 	Project  string
-	Endpoint string
+	Resource string
 	ID       string
 }
 

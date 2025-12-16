@@ -45,7 +45,7 @@ func TestGetByIDAndName(t *testing.T) {
 	elements, _, err := svc.ListAllPages(ctx, crud.ListRequest{
 		ResourceRequest: crud.ResourceRequest{
 			Project:  "gen-art2",
-			Endpoint: endpoint,
+			Resource: endpoint,
 		},
 		Params: map[string]string{
 			"size": "1",
@@ -71,7 +71,7 @@ func TestGetByIDAndName(t *testing.T) {
 	bodyByID, statusID, err := svc.Get(ctx, crud.GetRequest{
 		ResourceRequest: crud.ResourceRequest{
 			Project:  "gen-art2",
-			Endpoint: endpoint,
+			Resource: endpoint,
 		},
 		ID:   id,
 		Name: "",
@@ -84,7 +84,7 @@ func TestGetByIDAndName(t *testing.T) {
 	bodyByName, statusName, err := svc.Get(ctx, crud.GetRequest{
 		ResourceRequest: crud.ResourceRequest{
 			Project:  "gen-art2",
-			Endpoint: endpoint,
+			Resource: endpoint,
 		},
 		ID:   "",
 		Name: name,

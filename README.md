@@ -67,14 +67,14 @@ func main() {
 
 These are used when you call `transfer.Upload(...)` / `transfer.Download(...)`.
 
-| Variable                 | Example                              |
-| ------------------------ | ------------------------------------ |
-| AWS_ACCESS_KEY_ID        | A68K...                              |
-| AWS_SECRET_ACCESS_KEY    | ...                                  |
-| AWS_SESSION_TOKEN        | ...                                  |
-| AWS_REGION               | us-east-1                            |
-| AWS_ENDPOINT_URL         | https://minio-api.dev.atlas.fbk.eu   |
-| S3_BUCKET                | datalake                             |
+| Variable              | Example                            |
+| --------------------- | ---------------------------------- |
+| AWS_ACCESS_KEY_ID     | A68K...                            |
+| AWS_SECRET_ACCESS_KEY | ...                                |
+| AWS_SESSION_TOKEN     | ...                                |
+| AWS_REGION            | us-east-1                          |
+| AWS_ENDPOINT_URL      | https://minio-api.dev.atlas.fbk.eu |
+| S3_BUCKET             | datalake                           |
 
 > Note: The SDK config struct uses `config.S3Config{...}`; you can map env vars however you prefer in your app.
 
@@ -86,7 +86,7 @@ These are used when you call `transfer.Upload(...)` / `transfer.Download(...)`.
 > If you start from CLI-like resource names, you can reuse the same mapping used by the CLI:
 >
 > ```go
-> endpoint := utils.TranslateEndpoint(resource) // e.g. "run" -> "runs"
+> endpoint := utils.TranslateEndpoint(resource) // e.g. "runs" -> "run"
 > ```
 
 ---
@@ -125,7 +125,7 @@ func main() {
 	items, _, err := svc.ListAllPages(ctx, crud.ListRequest{
 		ResourceRequest: crud.ResourceRequest{
 			Project:  "project-name",
-			Endpoint: "artifacts",
+			Resource: "artifacts",
 		},
 		Params: map[string]string{
 			"size": "200",
@@ -151,7 +151,7 @@ func main() {
 body, _, err := svc.Get(ctx, crud.GetRequest{
 	ResourceRequest: crud.ResourceRequest{
 		Project:  "project-name",
-		Endpoint: "artifacts",
+		Resource: "artifacts",
 	},
 	ID: "artifact-id",
 })
@@ -165,7 +165,7 @@ _ = err
 body, _, err := svc.Get(ctx, crud.GetRequest{
 	ResourceRequest: crud.ResourceRequest{
 		Project:  "project-name",
-		Endpoint: "artifacts",
+		Resource: "artifacts",
 	},
 	// When ID is empty, Get uses:
 	// ?name=<name>&versions=latest
@@ -208,7 +208,7 @@ func main() {
 	err = svc.Create(ctx, crud.CreateRequest{
 		ResourceRequest: crud.ResourceRequest{
 			Project:  "project-name",
-			Endpoint: "artifacts",
+			Resource: "artifacts",
 		},
 		// One of:
 		// - FilePath: "/path/to/resource.yaml"
@@ -232,7 +232,7 @@ body := []byte(`{"project":"project-name","kind":"...","spec":{"foo":"bar"}}`)
 err := svc.Update(ctx, crud.UpdateRequest{
 	ResourceRequest: crud.ResourceRequest{
 		Project:  "project-name",
-		Endpoint: "artifacts",
+		Resource: "artifacts",
 	},
 	ID:   "artifact-id",
 	Body: body,
@@ -251,7 +251,7 @@ if err != nil {
 err := svc.Delete(ctx, crud.DeleteRequest{
 	ResourceRequest: crud.ResourceRequest{
 		Project:  "project-name",
-		Endpoint: "artifacts",
+		Resource: "artifacts",
 	},
 	ID:      "artifact-id",
 	Cascade: false,
@@ -264,7 +264,7 @@ if err != nil {
 err = svc.Delete(ctx, crud.DeleteRequest{
 	ResourceRequest: crud.ResourceRequest{
 		Project:  "project-name",
-		Endpoint: "artifacts",
+		Resource: "artifacts",
 	},
 	Name:    "my-artifact",
 	Cascade: false,
@@ -279,6 +279,7 @@ if err != nil {
 ## ▶️ Run / Stop / Resume (RunService)
 
 The `run` service replicates the CLI behavior:
+
 - resolves functions by name or ID
 - finds or creates tasks
 - creates runs with the correct `kind` (e.g. `python+job` → `python+job:run`)
@@ -328,7 +329,7 @@ func main() {
 	_, _, _ = runSvc.Stop(ctx, run.StopRequest{
 		RunResourceRequest: run.RunResourceRequest{
 			Project:  "project-name",
-			Endpoint: "runs",
+			Resource: "runs",
 			ID:       "run-id",
 		},
 	})
@@ -336,7 +337,7 @@ func main() {
 	_, _, _ = runSvc.Resume(ctx, run.ResumeRequest{
 		RunResourceRequest: run.RunResourceRequest{
 			Project:  "project-name",
-			Endpoint: "runs",
+			Resource: "runs",
 			ID:       "run-id",
 		},
 	})
@@ -391,7 +392,7 @@ func main() {
 	logBody, _, err := svc.GetLogs(ctx, run.LogRequest{
 		RunResourceRequest: run.RunResourceRequest{
 			Project:  "project-name",
-			Endpoint: "runs",
+			Resource: "runs",
 			ID:       "run-id",
 		},
 	})
@@ -411,7 +412,7 @@ func main() {
 	resBody, _, err := svc.GetResource(ctx, run.LogRequest{
 		RunResourceRequest: run.RunResourceRequest{
 			Project:  "project-name",
-			Endpoint: "runs",
+			Resource: "runs",
 			ID:       "run-id",
 		},
 	})
@@ -478,7 +479,7 @@ func main() {
 	if err := svc.PrintMetrics(ctx, run.MetricsRequest{
 		RunResourceRequest: run.RunResourceRequest{
 			Project:  "project-name",
-			Endpoint: "runs",
+			Resource: "runs",
 			ID:       "run-id",
 		},
 		// Container: "" // optional; if empty, infer main container like CLI
@@ -493,6 +494,7 @@ func main() {
 ## ⬆️⬇️ Upload / Download (S3 / MinIO)
 
 The transfer service uses:
+
 - Core API to discover/download/upload resources
 - S3-compatible object storage for the actual file transfer
 

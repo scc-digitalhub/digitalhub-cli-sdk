@@ -15,10 +15,10 @@ import (
 )
 
 func (s *CrudService) Create(ctx context.Context, req CreateRequest) error {
-	if req.Endpoint == "" {
+	if req.Resource == "" {
 		return errors.New("endpoint is required")
 	}
-	if req.Endpoint != "projects" && req.Project == "" {
+	if req.Resource != "projects" && req.Project == "" {
 		return errors.New("project is mandatory for non-project resources")
 	}
 
@@ -39,7 +39,7 @@ func (s *CrudService) Create(ctx context.Context, req CreateRequest) error {
 		}
 
 		delete(jsonMap, "user")
-		if req.Endpoint != "projects" {
+		if req.Resource != "projects" {
 			jsonMap["project"] = req.Project
 		}
 		if req.ResetID {
@@ -57,7 +57,7 @@ func (s *CrudService) Create(ctx context.Context, req CreateRequest) error {
 		return fmt.Errorf("failed to marshal: %w", err)
 	}
 
-	url := s.http.BuildURL(req.Project, req.Endpoint, "", nil)
+	url := s.http.BuildURL(req.Project, req.Resource, "", nil)
 	_, _, err = s.http.Do(ctx, "POST", url, body)
 	if err != nil {
 		return err
