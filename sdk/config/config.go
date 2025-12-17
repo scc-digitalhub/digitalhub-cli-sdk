@@ -11,9 +11,11 @@ type Config struct {
 }
 
 type CoreConfig struct {
-	BaseURL     string
-	APIVersion  string
-	AccessToken string
+	BaseURL           string
+	APIVersion        string
+	AccessToken       string
+	BasicAuthUsername string
+	BasicAuthPassword string
 }
 
 type S3Config struct {

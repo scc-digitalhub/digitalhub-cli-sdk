@@ -50,6 +50,8 @@ type Config struct {
 	DhcoreEndpoint                    string `vkey:"dhcore_endpoint"                      env:"DHCORE_ENDPOINT"                      persist:"true"`
 	DhcoreExpiresIn                   string `vkey:"dhcore_expires_in"                    env:"DHCORE_EXPIRES_IN"                    persist:"true"`
 	DhcoreIdToken                     string `vkey:"dhcore_id_token"                      env:"DHCORE_ID_TOKEN"                      persist:"true"  secret:"true"`
+	DhcoreUser                        string `vkey:"dhcore_user"                          env:"DHCORE_USER"                          persist:"true"`
+	DhcorePassword                    string `vkey:"dhcore_password"                      env:"DHCORE_PASSWORD"                      persist:"true"  secret:"true"`
 	DhcoreIssuer                      string `vkey:"dhcore_issuer"                        env:"DHCORE_ISSUER"                        persist:"true"`
 	DhcoreName                        string `vkey:"dhcore_name"                          env:"DHCORE_NAME"                          persist:"true"`
 	DhcoreRealm                       string `vkey:"dhcore_realm"                         env:"DHCORE_REALM"                         persist:"true"`

@@ -37,9 +37,11 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 			return "", nil
 		}
 
-		urlRun := utils.BuildCoreUrl(req.Project, utils.TranslateEndpoint("run"), runID, nil)
-		reqRun := utils.PrepareRequest("GET", urlRun, nil, viper.GetString(utils.DhCoreAccessToken))
-		bodyRun, err := utils.DoRequest(reqRun)
+		// urlRun := utils.BuildCoreUrl(req.Project, utils.TranslateEndpoint("run"), runID, nil)
+		// reqRun := utils.PrepareRequest("GET", urlRun, nil, viper.GetString(utils.DhCoreAccessToken))
+		// bodyRun, err := utils.DoRequest(reqRun)
+		url := s.http.BuildURL(req.Project, utils.TranslateEndpoint("run"), runID, nil)
+		bodyRun, _, err := s.http.Do(ctx, "GET", url, nil)
 		if err != nil {
 			return "", err
 		}

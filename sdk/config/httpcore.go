@@ -67,8 +67,15 @@ func (httpCore *httpCore) Do(ctx context.Context, method, url string, data []byt
 	if data != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
+
+	// If access token is set, add Authorization header
 	if tok := httpCore.coreConfig.AccessToken; tok != "" {
 		req.Header.Set("Authorization", "Bearer "+tok)
+	}
+
+	// If basic auth is set, add Basic Auth header
+	if user := httpCore.coreConfig.BasicAuthUsername; user != "" {
+		req.SetBasicAuth(user, httpCore.coreConfig.BasicAuthPassword)
 	}
 
 	resp, err := httpCore.httpClient.Do(req)

@@ -77,79 +77,6 @@ func ReflectValue(v interface{}) string {
 	}
 }
 
-func BuildCoreUrl(project, resource, id string, params map[string]string) string {
-	base := viper.GetString(DhCoreEndpoint) + "/api/" + viper.GetString(DhCoreApiVersion)
-
-	var endpoint string
-	if resource != "projects" && project != "" {
-		endpoint += "/-/" + project
-	}
-	endpoint += "/" + resource
-	if id != "" {
-		endpoint += "/" + id
-	}
-
-	var qs string
-	if len(params) > 0 {
-		var sb strings.Builder
-		sb.WriteString("?")
-		for k, v := range params {
-			if v != "" {
-				sb.WriteString(k)
-				sb.WriteString("=")
-				sb.WriteString(v)
-				sb.WriteString("&")
-			}
-		}
-		qs = strings.TrimSuffix(sb.String(), "&")
-	}
-
-	return base + endpoint + qs
-}
-
-func PrepareRequest(method, url string, data []byte, accessToken string) *http.Request {
-	var body io.Reader
-	if data != nil {
-		body = bytes.NewReader(data)
-	}
-	req, err := http.NewRequest(method, url, body)
-	if err != nil {
-		log.Printf("Failed to initialize request: %v\n", err)
-		os.Exit(1)
-	}
-	if data != nil {
-		req.Header.Add("Content-type", "application/json")
-	}
-	if accessToken != "" {
-		req.Header.Add("Authorization", "Bearer "+accessToken)
-	}
-	return req
-}
-
-func DoRequest(req *http.Request) ([]byte, error) {
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Printf("Error performing request: %v\n", err)
-		os.Exit(1)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if resp.StatusCode != 200 {
-		msg := ""
-		var bodyMap map[string]interface{}
-		if json.Unmarshal(body, &bodyMap) == nil {
-			if m, ok := bodyMap["message"].(string); ok {
-				msg = " - " + m
-			}
-		}
-		log.Printf("Core responded with: %v%v\n", resp.Status, msg)
-		os.Exit(1)
-	}
-	return body, err
-}
-
 func TranslateFormat(format string) string {
 	switch strings.ToLower(format) {
 	case "json":
@@ -178,7 +105,7 @@ func GetFirstIfList(m map[string]interface{}) (map[string]interface{}, error) {
 		if len(contentSlice) >= 1 {
 			return contentSlice[0].(map[string]interface{}), nil
 		}
-		return nil, errors.New("Resource not found")
+		return nil, errors.New("resource not found")
 	}
 	return m, nil
 }
@@ -186,7 +113,7 @@ func GetFirstIfList(m map[string]interface{}) (map[string]interface{}, error) {
 func WaitForConfirmation(msg string) {
 	for {
 		buf := bufio.NewReader(os.Stdin)
-		log.Printf(msg)
+		log.Printf("%s", msg)
 		userInput, err := buf.ReadBytes('\n')
 		if err != nil {
 			log.Printf("Error in reading user input: %v\n", err)
@@ -272,7 +199,7 @@ func FetchConfig(configURL string) (map[string]interface{}, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Core returned a non-200 status code: %v", resp.Status)
+		return nil, fmt.Errorf("core returned a non-200 status code: %v", resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
