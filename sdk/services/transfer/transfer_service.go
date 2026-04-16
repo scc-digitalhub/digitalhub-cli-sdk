@@ -18,7 +18,7 @@ type TransferService struct {
 }
 
 func NewTransferService(ctx context.Context, conf config.Config) (*TransferService, error) {
-	httpc := config.NewHTTPCore(nil, conf.Core)
+	httpc := config.NewHTTPCore(conf.HTTPClient, conf.Core)
 
 	s3c, err := config.NewS3Client(ctx, config.S3Config{
 		AccessKey:   conf.S3.AccessKey,

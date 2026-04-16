@@ -20,6 +20,6 @@ func NewCrudService(_ context.Context, conf config.Config) (*CrudService, error)
 		return nil, errors.New("invalid core config")
 	}
 	return &CrudService{
-		http: config.NewHTTPCore(nil, conf.Core),
+		http: config.NewHTTPCore(conf.HTTPClient, conf.Core),
 	}, nil
 }

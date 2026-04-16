@@ -21,6 +21,6 @@ func NewRunService(ctx context.Context, conf config.Config) (*RunService, error)
 		return nil, errors.New("invalid core config")
 	}
 	return &RunService{
-		http: config.NewHTTPCore(nil, conf.Core),
+		http: config.NewHTTPCore(conf.HTTPClient, conf.Core),
 	}, nil
 }

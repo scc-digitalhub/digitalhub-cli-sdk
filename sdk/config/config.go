@@ -4,10 +4,13 @@
 
 package config
 
-// Config complessiva passata all’SDK (niente viper/INI qui)
+import "net/http"
+
+// Config complessiva passata all'SDK (niente viper/INI qui)
 type Config struct {
-	Core CoreConfig
-	S3   S3Config
+	Core       CoreConfig
+	S3         S3Config
+	HTTPClient *http.Client // Optional: custom HTTP client for debugging/customization
 }
 
 type CoreConfig struct {
