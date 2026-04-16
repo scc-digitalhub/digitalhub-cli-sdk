@@ -2,13 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package utils
+package transfer
 
 import (
 	"context"
-
-	"github.com/scc-digitalhub/digitalhub-cli-sdk/sdk/config"
-
 	"fmt"
 	"io"
 	"net/http"
@@ -18,19 +15,12 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/scc-digitalhub/digitalhub-cli-sdk/sdk/config"
 )
 
-/* ------------ logging helpers (stderr) ------------ */
+/* ------------ S3 Upload: Single File ------------ */
 
-func upInfof(format string, a ...any) {
-	fmt.Fprintf(os.Stderr, "[INFO] "+format+"\n", a...)
-}
-func upWarnf(format string, a ...any) {
-	fmt.Fprintf(os.Stderr, "[WARN] "+format+"\n", a...)
-}
-
-/* ------------ FILE SINGOLO ------------ */
-
+// UploadS3File uploads a single file to S3 with progress tracking
 func UploadS3File(client *config.S3Client, ctx context.Context, bucket, key, localPath string, verbose bool) (map[string]interface{}, []map[string]interface{}, error) {
 	file, err := os.Open(localPath)
 	if err != nil {
@@ -47,7 +37,7 @@ func UploadS3File(client *config.S3Client, ctx context.Context, bucket, key, loc
 	}
 
 	// Banner (uguale per verbose / non-verbose)
-	upInfof("Preparing upload %s → s3://%s/%s", displayPathUpload(localPath), bucket, key)
+	infof("Preparing upload %s → s3://%s/%s", displayPathUpload(localPath), bucket, key)
 
 	// Upload
 	var output interface{}
@@ -149,8 +139,9 @@ func UploadS3File(client *config.S3Client, ctx context.Context, bucket, key, loc
 	return result, files, nil
 }
 
-/* ------------ DIRECTORY ------------ */
+/* ------------ S3 Upload: Directory ------------ */
 
+// UploadS3Dir uploads a directory to S3 with progress tracking
 func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *ParsedPath, localPath string, verbose bool) ([]map[string]interface{}, []map[string]interface{}, error) {
 	bucket := parsedPath.Host
 	prefix := parsedPath.Path
@@ -175,10 +166,10 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 
 	total := len(localFiles)
 	if verbose {
-		upInfof("Preparing upload directory %s → s3://%s/%s (%d files, %.2f MB)",
+		infof("Preparing upload directory %s → s3://%s/%s (%d files, %.2f MB)",
 			displayPathUpload(localPath), bucket, prefix, total, float64(totalBytes)/(1024*1024))
 	} else {
-		upInfof("Preparing upload directory %s → s3://%s/%s", displayPathUpload(localPath), bucket, prefix)
+		infof("Preparing upload directory %s → s3://%s/%s", displayPathUpload(localPath), bucket, prefix)
 	}
 
 	var results []map[string]interface{}
@@ -303,8 +294,9 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 	return results, fileInfos, nil
 }
 
-/* ------------ helpers ------------ */
+/* ------------ Upload Helper Functions ------------ */
 
+// normalizeUploadResult normalizes S3 upload response to a map
 func normalizeUploadResult(output interface{}) map[string]interface{} {
 	result := map[string]interface{}{}
 	switch v := output.(type) {
@@ -322,6 +314,7 @@ func normalizeUploadResult(output interface{}) map[string]interface{} {
 	return result
 }
 
+// displayPathUpload for upload operations
 func displayPathUpload(p string) string {
 	if p == "" {
 		return "."

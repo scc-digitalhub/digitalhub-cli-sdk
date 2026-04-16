@@ -79,7 +79,6 @@ func (s *RunService) Run(ctx context.Context, req RunRequest) error {
 		endpoint = "runs"
 	}
 	url := s.http.BuildURL(req.Project, endpoint, "", nil)
-	fmt.Printf("POST %s\n", url)
 
 	_, status, err := s.http.Do(ctx, "POST", url, data)
 	if err != nil {

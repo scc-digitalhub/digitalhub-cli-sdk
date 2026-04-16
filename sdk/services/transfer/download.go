@@ -12,8 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/scc-digitalhub/digitalhub-cli-sdk/sdk/utils"
 )
 
 func (s *TransferService) Download(ctx context.Context, endpoint string, req DownloadRequest) ([]DownloadInfo, error) {
@@ -44,7 +42,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 
 	var out []DownloadInfo
 	for _, p := range paths {
-		pp, err := utils.ParsePath(p)
+		pp, err := ParsePath(p)
 		if err != nil {
 			continue
 		}
@@ -59,7 +57,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 			key := strings.TrimPrefix(pp.Path, "/")
 			if strings.HasSuffix(key, "/") {
 				// Directory (paginata): in caso di errore, NON fallire tutto → skip
-				if derr := utils.DownloadS3FileOrDir(s.s3, ctx, pp, target, req.Verbose); derr != nil {
+				if derr := DownloadS3FileOrDir(s.s3, ctx, pp, target, req.Verbose); derr != nil {
 					// skip dir (log a livello CLI se vuoi)
 					continue
 				}
@@ -82,7 +80,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 				}
 			} else {
 				// File singolo: su errore, NON fallire → skip
-				if ferr := utils.DownloadS3FileOrDir(s.s3, ctx, pp, target, req.Verbose); ferr != nil {
+				if ferr := DownloadS3FileOrDir(s.s3, ctx, pp, target, req.Verbose); ferr != nil {
 					continue
 				}
 				if st, err := os.Stat(target); err == nil && !st.IsDir() {
@@ -96,7 +94,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 
 		case "http", "https":
 			// Su errore HTTP, skip (come original)
-			if herr := utils.DownloadHTTPFile(pp.Path, target); herr != nil {
+			if herr := DownloadHTTPFile(pp.Path, target); herr != nil {
 				continue
 			}
 			if st, err := os.Stat(target); err == nil && !st.IsDir() {

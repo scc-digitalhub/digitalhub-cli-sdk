@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/scc-digitalhub/digitalhub-cli-sdk/sdk/utils"
 	"github.com/spf13/viper"
 )
 
@@ -32,12 +31,12 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 
 	// getRunKey func...retrieve the key from the run
 	getRunKey := func() (string, error) {
-		runID := viper.GetString(utils.RunId)
+		runID := viper.GetString(RunId)
 		if runID == "" {
 			return "", nil
 		}
 
-		url := s.http.BuildURL(req.Project, utils.TranslateEndpoint("run"), runID, nil)
+		url := s.http.BuildURL(req.Project, TranslateEndpoint("run"), runID, nil)
 		bodyRun, _, err := s.http.Do(ctx, "GET", url, nil)
 		if err != nil {
 			return "", err
@@ -99,7 +98,7 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 			return nil, fmt.Errorf("cannot access input: %w", err)
 		}
 
-		artifactID = utils.UUIDv4NoDash()
+		artifactID = UUIDv4NoDash()
 
 		var path string
 		if st.IsDir() {
@@ -159,7 +158,7 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 		return nil, errors.New("missing or invalid spec field")
 	}
 	pathStr, _ := spec["path"].(string)
-	parsedPath, err := utils.ParsePath(pathStr)
+	parsedPath, err := ParsePath(pathStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid path in artifact: %w", err)
 	}
@@ -178,7 +177,7 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 		if !ok {
 			existing = map[string]interface{}{}
 		}
-		merged := utils.MergeMaps(existing, updateData, utils.MergeConfig{})
+		merged := MergeMaps(existing, updateData, MergeConfig{})
 		artifact[key] = merged
 
 		payload, err := json.Marshal(artifact)
@@ -208,7 +207,7 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 	ctxUp := ctx
 
 	if st.IsDir() {
-		_, files, err = utils.UploadS3Dir(s.s3, ctxUp, parsedPath, req.Input, req.Verbose)
+		_, files, err = UploadS3Dir(s.s3, ctxUp, parsedPath, req.Input, req.Verbose)
 		if err != nil {
 			_ = updateStatus("status", map[string]interface{}{"state": "ERROR"})
 			return nil, fmt.Errorf("upload failed: %w", err)
@@ -220,7 +219,7 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 		} else {
 			targetKey = parsedPath.Path
 		}
-		_, files, err = utils.UploadS3File(s.s3, ctxUp, parsedPath.Host, targetKey, req.Input, req.Verbose)
+		_, files, err = UploadS3File(s.s3, ctxUp, parsedPath.Host, targetKey, req.Input, req.Verbose)
 		if err != nil {
 			_ = updateStatus("status", map[string]interface{}{"state": "ERROR"})
 			return nil, fmt.Errorf("upload failed: %w", err)

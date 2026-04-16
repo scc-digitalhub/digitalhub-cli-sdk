@@ -2,13 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package utils
+package transfer
 
 import (
 	"context"
-
-	"github.com/scc-digitalhub/digitalhub-cli-sdk/sdk/config"
-
 	"fmt"
 	"io"
 	"net/http"
@@ -19,21 +16,14 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/scc-digitalhub/digitalhub-cli-sdk/sdk/config"
 )
 
-/* ------------ logging helpers (stderr) ------------ */
+/* ------------ HTTP Download ------------ */
 
-func infof(format string, a ...any) {
-	fmt.Fprintf(os.Stderr, "[INFO] "+format+"\n", a...)
-}
-func warnf(format string, a ...any) {
-	fmt.Fprintf(os.Stderr, "[WARN] "+format+"\n", a...)
-}
-
-/* ------------ HTTP (con progress “silenzioso” se possibile) ------------ */
-
-func DownloadHTTPFile(url string, destination string) error {
-	resp, err := http.Get(url)
+// DownloadHTTPFile downloads a file from an HTTP URL with progress tracking
+func DownloadHTTPFile(urlStr string, destination string) error {
+	resp, err := http.Get(urlStr)
 	if err != nil {
 		return err
 	}
@@ -73,8 +63,9 @@ func DownloadHTTPFile(url string, destination string) error {
 	return nil
 }
 
-/* ------------ S3: file o directory (with continuation token) ------------ */
+/* ------------ S3 Download ------------ */
 
+// DownloadS3FileOrDir downloads a file or directory from S3 with progress tracking
 func DownloadS3FileOrDir(
 	s3Client *config.S3Client,
 	ctx context.Context,
@@ -270,10 +261,9 @@ func DownloadS3FileOrDir(
 	return nil
 }
 
-/* ------------ helpers ------------ */
+/* ------------ Download Helper Functions ------------ */
 
-// Rimuove l’ultimo segmento dal path locale in modo che i file della “cartella” S3
-// vengano salvati senza includere il prefisso root.
+// cleanLocalPath removes the last segment to avoid including root prefix
 func cleanLocalPath(path string) string {
 	clean := filepath.Clean(path)
 	parts := strings.Split(clean, string(os.PathSeparator))
@@ -283,7 +273,7 @@ func cleanLocalPath(path string) string {
 	return filepath.Join(parts[:len(parts)-1]...)
 }
 
-// per stampare cartelle vuote come "." invece di stringa vuota
+// displayPath for displaying empty path as "."
 func displayPath(p string) string {
 	if p == "" {
 		return "."
