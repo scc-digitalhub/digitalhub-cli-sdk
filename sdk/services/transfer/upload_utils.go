@@ -156,6 +156,11 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 		if info.IsDir() {
 			return nil
 		}
+		// Skip symlinks: opening a symlink to a directory produces a non-seekable
+		// stream that the S3 SDK cannot rewind for retries.
+		if info.Mode()&os.ModeSymlink != 0 {
+			return nil
+		}
 		localFiles = append(localFiles, path)
 		totalBytes += info.Size()
 		return nil
