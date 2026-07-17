@@ -102,9 +102,9 @@ func (s *TransferService) Upload(ctx context.Context, endpoint string, req Uploa
 
 		var path string
 		if st.IsDir() {
-			path = fmt.Sprintf("s3://%s/%s/%s/%s/", bucket, req.Project, req.Resource, artifactID)
+			path = fmt.Sprintf("s3://%s/%s/%s/%s/%s/", bucket, req.Project, req.Resource, req.Name, artifactID)
 		} else {
-			path = fmt.Sprintf("s3://%s/%s/%s/%s/%s", bucket, req.Project, req.Resource, artifactID, st.Name())
+			path = fmt.Sprintf("s3://%s/%s/%s/%s/%s/%s", bucket, req.Project, req.Resource, req.Name, artifactID, st.Name())
 		}
 
 		entity := map[string]interface{}{
