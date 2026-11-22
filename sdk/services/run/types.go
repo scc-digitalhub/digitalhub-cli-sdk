@@ -4,35 +4,35 @@
 
 package run
 
-// Base comune per tutte le operazioni su una risorsa "run-like"
+// Base shared by all operations on a "run-like" resource.
 type RunResourceRequest struct {
 	Project  string
 	Resource string
 	ID       string
 }
 
-// Request per logs e get resource
+// Request for logs and resource retrieval.
 type LogRequest struct {
 	RunResourceRequest
 }
 
-// Request per metrics (in più: container opzionale)
+// Request for metrics (with an optional container).
 type MetricsRequest struct {
 	RunResourceRequest
 	Container string
 }
 
-// Request per stop
+// Request for stopping a run.
 type StopRequest struct {
 	RunResourceRequest
 }
 
-// Request per resume
+// Request for resuming a run.
 type ResumeRequest struct {
 	RunResourceRequest
 }
 
-// Request per creare un run
+// Request for creating a run.
 type RunRequest struct {
 	Project      string
 	TaskKind     string
@@ -40,6 +40,6 @@ type RunRequest struct {
 	FunctionName string
 	InputSpec    map[string]interface{}
 
-	// endpoint per i runs, già risolto dall'adapter (es. "runs")
+	// Endpoint for runs, already resolved by the adapter (e.g. "runs").
 	ResolvedRunsEndpoint string
 }

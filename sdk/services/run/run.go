@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-// taskToRunKind converte task kind ("python+job", "python+job:task")
-// nel corrispondente run kind ("python+job:run").
+// taskToRunKind converts a task kind ("python+job", "python+job:task")
+// to the corresponding run kind ("python+job:run").
 func taskToRunKind(task string) string {
 	task = strings.TrimSpace(task)
 	if task == "" {
@@ -26,7 +26,7 @@ func taskToRunKind(task string) string {
 	return task + ":run"
 }
 
-// Run crea un run, mantenendo la logica originale
+// Run creates a run while preserving the original logic.
 func (s *RunService) Run(ctx context.Context, req RunRequest) error {
 	if req.Project == "" {
 		return errors.New("project not specified")
@@ -35,17 +35,17 @@ func (s *RunService) Run(ctx context.Context, req RunRequest) error {
 		return errors.New("task kind not specified")
 	}
 
-	// IMPORTANT: manteniamo esattamente l'handling dell'originale
+	// IMPORTANT: preserve the original handling exactly.
 	origTaskKind := req.TaskKind
 	runKind := taskToRunKind(origTaskKind)
 
-	// Resolve function (ritorna kind e key; ci serve il key per spec)
+	// Resolve the function (returns its kind and key; the key is needed for spec).
 	_, fnKey, err := s.resolveFunction(ctx, req.Project, req.FunctionID, req.FunctionName)
 	if err != nil {
 		return err
 	}
 
-	// Get o create TASK usando l'ORIGINAL task kind (exact match)
+	// Get or create the TASK using the ORIGINAL task kind (exact match).
 	taskKey, err := s.getTaskKey(ctx, req.Project, fnKey, origTaskKind)
 	if err != nil {
 		taskKey, err = s.createTask(ctx, req.Project, fnKey, origTaskKind)
@@ -54,7 +54,7 @@ func (s *RunService) Run(ctx context.Context, req RunRequest) error {
 		}
 	}
 
-	// Build spec: merge input, poi forza i campi richiesti
+	// Build the spec: merge the input, then set the required fields.
 	spec := map[string]interface{}{}
 	for k, v := range req.InputSpec {
 		spec[k] = v
@@ -63,7 +63,7 @@ func (s *RunService) Run(ctx context.Context, req RunRequest) error {
 	spec["function"] = fnKey
 	spec["local_execution"] = false
 
-	// Body del RUN: kind = runKind (es. "python+job:run")
+	// RUN body: kind = runKind (e.g. "python+job:run").
 	body := map[string]interface{}{
 		"kind":    runKind,
 		"project": req.Project,
@@ -159,7 +159,7 @@ func (s *RunService) getTaskKey(ctx context.Context, project, functionKey, taskK
 func (s *RunService) createTask(ctx context.Context, project, functionKey, taskKind string) (string, error) {
 	url := s.http.BuildURL(project, "tasks", "", nil)
 
-	// EXACTLY come il vecchio codice: usa taskKind AS-IS
+	// EXACTLY as in the old code: use taskKind AS-IS.
 	body := map[string]interface{}{
 		"kind":    taskKind,
 		"project": project,
@@ -194,7 +194,7 @@ func (s *RunService) createTask(ctx context.Context, project, functionKey, taskK
 	return fmt.Sprintf("%s://%s/%v", k, project, idVal), nil
 }
 
-// Copia minimale di utils.GetFirstIfList per isolare l’SDK
+// Minimal copy of utils.GetFirstIfList to keep the SDK isolated.
 func getFirstIfList(m map[string]interface{}) (map[string]interface{}, error) {
 	if c, ok := m["content"].([]interface{}); ok && len(c) > 0 {
 		if mm, ok := c[0].(map[string]interface{}); ok {

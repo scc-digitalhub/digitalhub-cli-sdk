@@ -24,15 +24,15 @@ type DownloadInfo struct {
 type UploadRequest struct {
 	Project  string
 	Resource string
-	ID       string // opzionale; se vuoto -> crea nuovo artefatto
-	Name     string // obbligatorio se ID vuoto (creazione)
-	Input    string // file o directory locale (obbligatorio)
+	ID       string // Optional; if empty, a new artifact is created.
+	Name     string // Required when ID is empty (creation).
+	Input    string // Local file or directory (required).
 	Verbose  bool
-	// Opzionale: override del bucket (default = "datalake" per compatibilità)
+	// Optional bucket override (default = "datalake" for compatibility).
 	Bucket string
 }
 
 type UploadResult struct {
 	ArtifactID string
-	Files      []map[string]interface{} // come in READY.status.files
+	Files      []map[string]interface{} // Same as READY.status.files.
 }

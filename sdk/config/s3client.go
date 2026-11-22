@@ -60,7 +60,7 @@ type S3File struct {
 	LastModified string
 }
 
-/* -------------------- LIST (paginata) -------------------- */
+/* -------------------- LIST (paginated) -------------------- */
 
 func (c *S3Client) ListFilesPaged(
 	ctx context.Context,
@@ -117,13 +117,13 @@ func (c *S3Client) ListFilesAll(ctx context.Context, bucket string, prefix strin
 	return allFiles, nil
 }
 
-// compat (una sola pagina)
+// Compatibility (single page).
 func (c *S3Client) ListFiles(ctx context.Context, bucket string, prefix string, maxKeys *int32) ([]S3File, error) {
 	files, _, err := c.ListFilesPaged(ctx, bucket, prefix, maxKeys, nil)
 	return files, err
 }
 
-/* -------------------- WALK (paginato + callback) -------------------- */
+/* -------------------- WALK (paginated + callback) -------------------- */
 
 func (c *S3Client) WalkPrefix(
 	ctx context.Context,
@@ -148,7 +148,7 @@ func (c *S3Client) WalkPrefix(
 		}
 
 		for _, obj := range resp.Contents {
-			// escludi placeholder "cartella"
+			// Exclude "folder" placeholders.
 			if obj.Key != nil && !(strings.HasSuffix(aws.ToString(obj.Key), "/") && aws.ToInt64(obj.Size) == 0) {
 				if err := fn(obj); err != nil {
 					return err
@@ -179,6 +179,27 @@ type progressWriter struct {
 	lastEmit   time.Time
 	interval   time.Duration
 	onProgress func(key string, written, total int64)
+}
+
+type progressReadSeeker struct {
+	file     *os.File
+	progress *progressWriter
+}
+
+func (r *progressReadSeeker) Read(p []byte) (int, error) {
+	n, err := r.file.Read(p)
+	if n > 0 {
+		_, _ = r.progress.Write(p[:n])
+	}
+	return n, err
+}
+
+func (r *progressReadSeeker) Seek(offset int64, whence int) (int64, error) {
+	position, err := r.file.Seek(offset, whence)
+	if err == nil {
+		r.progress.written = position
+	}
+	return position, err
 }
 
 func (pw *progressWriter) Write(p []byte) (int, error) {
@@ -267,7 +288,7 @@ func (c *S3Client) DownloadFileWithProgress(
 
 /* -------------------- UPLOAD -------------------- */
 
-// Compat: upload senza progress (non tocco il tuo codice esistente)
+// Compatibility: upload without progress (leave the existing code untouched).
 func (c *S3Client) UploadFile(ctx context.Context, bucket, key string, file *os.File) (interface{}, error) {
 	const threshold = 100 * 1024 * 1024
 
@@ -306,7 +327,7 @@ func (c *S3Client) UploadFile(ctx context.Context, bucket, key string, file *os.
 	})
 }
 
-// Nuovo: upload con progress (usa lo stesso threshold/strategy)
+// New: upload with progress (uses the same threshold/strategy).
 func (c *S3Client) UploadFileWithProgress(
 	ctx context.Context,
 	bucket, key string,
@@ -347,7 +368,7 @@ func (c *S3Client) UploadFileWithProgress(
 	}
 
 	start := time.Now()
-	reader := io.TeeReader(file, pw)
+	reader := &progressReadSeeker{file: file, progress: pw}
 
 	if size > threshold {
 		out, err := manager.NewUploader(c.s3).Upload(ctx, &s3.PutObjectInput{

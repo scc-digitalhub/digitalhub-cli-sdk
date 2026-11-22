@@ -22,14 +22,16 @@ const (
 )
 
 var Resources = map[string][]string{
-	"artifacts": {"artifact"},
-	"dataitems": {"dataitem"},
-	"functions": {"function", "fn"},
-	"models":    {"model"},
-	"projects":  {"project"},
-	"runs":      {"run"},
-	"workflows": {"workflow"},
-	"logs":      {"log"},
+	"artifacts":       {"artifact"},
+	"dataitems":       {"dataitem"},
+	"functions":       {"function", "fn"},
+	"models":          {"model"},
+	"projects":        {"project"},
+	"runs":            {"run"},
+	"workflows":       {"workflow"},
+	"logs":            {"log"},
+	"containerimages": {"containerimage"},
+	"extensions":      {"extension"},
 }
 
 /* ------------ Types ------------ */

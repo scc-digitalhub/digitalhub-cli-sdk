@@ -11,7 +11,7 @@ import (
 )
 
 // Resume performs POST {base}/{project}/{endpoint}/{id}/resume
-// Ritorna body e status per far stampare lo stato all'adapter.
+// Returns the body and status so the adapter can print the state.
 func (s *RunService) Resume(ctx context.Context, req ResumeRequest) ([]byte, int, error) {
 	if req.Project == "" {
 		return nil, 0, errors.New("project not specified")

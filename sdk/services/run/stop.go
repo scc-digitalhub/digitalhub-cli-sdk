@@ -11,7 +11,7 @@ import (
 )
 
 // Stop performs POST {base}/{project}/{endpoint}/{id}/stop
-// Ritorna body e status per far stampare lo stato all'adapter.
+// Returns the body and status so the adapter can print the state.
 func (s *RunService) Stop(ctx context.Context, req StopRequest) ([]byte, int, error) {
 	if req.Project == "" {
 		return nil, 0, errors.New("project not specified")

@@ -6,7 +6,7 @@ package config
 
 import "net/http"
 
-// Config complessiva passata all'SDK (niente viper/INI qui)
+// Overall configuration passed to the SDK (no viper/INI here).
 type Config struct {
 	Core       CoreConfig
 	S3         S3Config

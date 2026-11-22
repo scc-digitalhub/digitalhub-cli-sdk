@@ -36,7 +36,7 @@ func UploadS3File(client *config.S3Client, ctx context.Context, bucket, key, loc
 		return nil, nil, fmt.Errorf("seek error: %w", err)
 	}
 
-	// Banner (uguale per verbose / non-verbose)
+	// Banner (same for verbose and non-verbose modes).
 	infof("Preparing upload %s → s3://%s/%s", displayPathUpload(localPath), bucket, key)
 
 	// Upload
@@ -63,7 +63,7 @@ func UploadS3File(client *config.S3Client, ctx context.Context, bucket, key, loc
 				}
 			},
 		}
-		// rewind per sicurezza
+		// Rewind for safety.
 		if _, err := file.Seek(0, io.SeekStart); err != nil {
 			return nil, nil, fmt.Errorf("seek error: %w", err)
 		}
@@ -72,7 +72,7 @@ func UploadS3File(client *config.S3Client, ctx context.Context, bucket, key, loc
 			return nil, nil, fmt.Errorf("upload error: %w", err)
 		}
 	} else {
-		// NON-verbose: progress globale su una riga (percentuale affidabile dal size locale)
+		// Non-verbose: global progress on a single line (reliable percentage from the local file size).
 		st, statErr := file.Stat()
 		var total int64
 		if statErr == nil {
@@ -146,7 +146,7 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 	bucket := parsedPath.Host
 	prefix := parsedPath.Path
 
-	// Enumerazione file locali (per stampare [i/N] e calcolare totals)
+	// Enumerate local files (to print [i/N] and calculate totals).
 	var localFiles []string
 	var totalBytes int64
 	err := filepath.Walk(localPath, func(path string, info os.FileInfo, walkErr error) error {
@@ -180,7 +180,7 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 	var results []map[string]interface{}
 	var fileInfos []map[string]interface{}
 
-	// Progress globale per modalità non-verbose
+	// Global progress for non-verbose mode.
 	var gp *globalProgress
 	if !verbose {
 		gp = &globalProgress{
@@ -248,7 +248,7 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 			}
 			results = append(results, normalizeUploadResult(out))
 		} else {
-			// non-verbose: aggiorna la progress BAR GLOBALE con un hook per-file
+			// Non-verbose: update the global progress bar with a per-file hook.
 			var prevWritten int64
 			hook := &config.ProgressHook{
 				OnProgress: func(k string, written, total int64) {
@@ -278,7 +278,7 @@ func UploadS3Dir(client *config.S3Client, ctx context.Context, parsedPath *Parse
 			results = append(results, normalizeUploadResult(out))
 		}
 
-		// Accumula info file per status
+		// Accumulate file info for the status.
 		dirPath := filepath.Dir(relPath)
 		normalizedPath := info.Name()
 		if dirPath != "." {

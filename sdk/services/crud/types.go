@@ -4,9 +4,9 @@
 
 package crud
 
-// usata embedded nelle altre request
+// Embedded in other requests.
 type ResourceRequest struct {
-	Project  string // obbligatorio per risorse != "projects"
+	Project  string // Required for resources other than "projects".
 	Resource string // "projects", "artifacts", ...
 }
 

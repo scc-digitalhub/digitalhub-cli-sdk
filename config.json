@@ -7,6 +7,8 @@
         "projects": "project",
         "runs": "run",
         "workflows": "workflow",
-        "logs": "log"
+        "logs": "log",
+        "extensions": "extension",
+        "containerimages": "containerimage"
     }
 }

@@ -46,7 +46,7 @@ func (s *CrudService) Create(ctx context.Context, req CreateRequest) error {
 			delete(jsonMap, "id")
 		}
 	} else {
-		// caso project senza file: usa solo name
+		// For a project without a file, use only the name.
 		jsonMap = map[string]any{
 			"name": req.Name,
 		}

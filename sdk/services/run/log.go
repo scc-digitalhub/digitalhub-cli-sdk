@@ -31,7 +31,7 @@ func (s *RunService) GetLogs(ctx context.Context, req LogRequest) ([]byte, int, 
 }
 
 // GetResource performs GET {base}/{project}/{endpoint}/{id}
-// usato per leggere la risorsa run e derivare spec.task, ecc.
+// Used to read the run resource and derive spec.task, etc.
 func (s *RunService) GetResource(ctx context.Context, req LogRequest) ([]byte, int, error) {
 	if req.Project == "" {
 		return nil, 0, errors.New("project not specified")

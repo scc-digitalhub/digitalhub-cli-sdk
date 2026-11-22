@@ -35,7 +35,7 @@ func DownloadHTTPFile(urlStr string, destination string) error {
 	}
 	defer out.Close()
 
-	// progress line unica anche senza verbose
+	// Single progress line, even without verbose mode.
 	gp := &globalProgress{}
 	if resp.ContentLength > 0 {
 		gp.totalKnown = true
@@ -75,7 +75,7 @@ func DownloadS3FileOrDir(
 ) error {
 
 	bucket := parsedPath.Host
-	// normalizza: rimuovi eventuale leading "/" (alcuni artifact salvano "/xxx/..")
+	// Normalize by removing a possible leading "/" (some artifacts store "/xxx/...").
 	path := strings.TrimPrefix(parsedPath.Path, "/")
 
 	// Directory?
@@ -86,7 +86,7 @@ func DownloadS3FileOrDir(
 		var totalBytes int64
 		var totalsKnown bool
 
-		// Calcolo totals SEMPRE se possibile (serve per la percentuale globale)
+		// Always calculate totals when possible (needed for the global percentage).
 		all, err := s3Client.ListFilesAll(ctx, bucket, path)
 		if err != nil {
 			warnf("Listing failed, proceeding without totals: %v", err)
@@ -106,11 +106,11 @@ func DownloadS3FileOrDir(
 			}
 		}
 
-		// Scarica via WalkPrefix (pagination)
+		// Download via WalkPrefix (pagination).
 		pageSize := int32(1000)
 		var idx int
 
-		// Progress globale SOLO quando non-verbose (in verbose mantieni i dettagli per file)
+		// Show global progress only in non-verbose mode; verbose mode keeps per-file details.
 		var gp *globalProgress
 		if !verbose {
 			gp = &globalProgress{
@@ -136,7 +136,7 @@ func DownloadS3FileOrDir(
 					fmt.Fprintf(os.Stderr, "   [%d] %s\n", idx, relativePath)
 				}
 
-				// barra di avanzamento per-file (già presente)
+				// Per-file progress bar (already present).
 				hook := &config.ProgressHook{
 					OnStart: func(k string, total int64) {
 						if total > 0 {
@@ -162,7 +162,7 @@ func DownloadS3FileOrDir(
 					return fmt.Errorf("failed to download file: %w", err)
 				}
 			} else {
-				// non-verbose: progress GLOBALE su una riga
+				// Non-verbose: global progress on a single line.
 				var prevWritten int64
 				hook := &config.ProgressHook{
 					OnProgress: func(k string, written, total int64) {
@@ -174,7 +174,7 @@ func DownloadS3FileOrDir(
 						prevWritten = written
 					},
 					OnDone: func(k string, total int64, took time.Duration) {
-						// in caso di arrotondamenti, assicurati di contare tutto il file
+						// Account for the entire file in case of rounding.
 						if total > prevWritten && gp != nil {
 							gp.add(total - prevWritten)
 							gp.render(true)
@@ -197,7 +197,7 @@ func DownloadS3FileOrDir(
 		return nil
 	}
 
-	// Singolo file
+	// Single file.
 	key := path
 	if verbose {
 		infof("Preparing download s3://%s/%s → %s", bucket, key, displayPath(localPath))
@@ -228,7 +228,7 @@ func DownloadS3FileOrDir(
 		return nil
 	}
 
-	// non-verbose: banner minimo + progress globale su una riga
+	// Non-verbose: minimal banner and global progress on a single line.
 	infof("Preparing download s3://%s/%s → %s", bucket, key, displayPath(localPath))
 	var gp globalProgress
 	var prevWritten int64

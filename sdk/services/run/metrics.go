@@ -14,11 +14,11 @@ import (
 	"strings"
 )
 
-// PrintMetrics replica MetricsService.PrintMetrics:
-// - chiama getContainerLog
-// - prende status.metrics
-// - se non ci sono metrics, stampa "No metrics for this run."
-// - altrimenti pretty-print JSON.
+// PrintMetrics mirrors MetricsService.PrintMetrics:
+// - calls getContainerLog
+// - retrieves status.metrics
+// - prints "No metrics for this run." if there are no metrics
+// - otherwise, pretty-prints the JSON.
 func (s *RunService) PrintMetrics(ctx context.Context, req MetricsRequest) error {
 	if req.Project == "" {
 		return errors.New("project not specified")
@@ -65,10 +65,10 @@ func (s *RunService) PrintMetrics(ctx context.Context, req MetricsRequest) error
 	return nil
 }
 
-// getContainerLog replica la logica originale:
+// getContainerLog mirrors the original logic:
 // - GET /{endpoint}/{id}/logs
-// - se container vuoto, ricava main container da spec.task
-// - restituisce entry corrispondente al container scelto
+// - if the container is empty, derive the main container from spec.task
+// - return the entry matching the selected container
 func (s *RunService) getContainerLog(
 	ctx context.Context,
 	req RunResourceRequest,
@@ -87,7 +87,7 @@ func (s *RunService) getContainerLog(
 		return nil, fmt.Errorf("json parsing failed: %w", err)
 	}
 
-	// 2) Determine container name (se non specificato)
+	// 2) Determine the container name (if not specified).
 	containerName := container
 	if containerName == "" {
 		urlRes := s.http.BuildURL(req.Project, req.Resource, req.ID, nil)

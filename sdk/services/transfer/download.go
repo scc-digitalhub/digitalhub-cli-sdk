@@ -56,15 +56,15 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 		case "s3":
 			key := strings.TrimPrefix(pp.Path, "/")
 			if strings.HasSuffix(key, "/") {
-				// Directory (paginata): in caso di errore, NON fallire tutto → skip
+				// Directory (paginated): on error, do not fail everything; skip it.
 				if derr := DownloadS3FileOrDir(s.s3, ctx, pp, target, req.Verbose); derr != nil {
-					// skip dir (log a livello CLI se vuoi)
+					// Skip the directory (log at the CLI level if desired).
 					continue
 				}
 				// reporting
 				files, lerr := s.s3.ListFilesAll(ctx, pp.Host, key)
 				if lerr != nil {
-					// warning/skip reporting, ma NON fallire
+					// Warn and skip reporting, but do not fail.
 					continue
 				}
 				base := dirBaseForLocalTarget(target)
@@ -79,7 +79,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 					}
 				}
 			} else {
-				// File singolo: su errore, NON fallire → skip
+				// Single file: on error, do not fail; skip it.
 				if ferr := DownloadS3FileOrDir(s.s3, ctx, pp, target, req.Verbose); ferr != nil {
 					continue
 				}
@@ -93,7 +93,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 			}
 
 		case "http", "https":
-			// Su errore HTTP, skip (come original)
+			// On HTTP error, skip (as in the original).
 			if herr := DownloadHTTPFile(pp.Path, target); herr != nil {
 				continue
 			}
@@ -106,7 +106,7 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 			}
 
 		default:
-			// unsupported → skip (come original)
+			// Unsupported; skip (as in the original).
 			continue
 		}
 	}
@@ -115,11 +115,11 @@ func (s *TransferService) Download(ctx context.Context, endpoint string, req Dow
 
 // --- helpers ---
 
-// chooseLocalTarget replica l’originale:
-// - se dst è vuoto → usa filename nella cwd
-// - se dst esiste ed è directory → dst/filename
-// - se dst esiste ed è file → dst
-// - se dst NON esiste → crea directory dst e usa dst/filename
+// chooseLocalTarget mirrors the original behavior:
+// - if dst is empty, use filename in the current working directory
+// - if dst exists and is a directory, use dst/filename
+// - if dst exists and is a file, use dst
+// - if dst does not exist, create directory dst and use dst/filename
 func chooseLocalTarget(dst, filename string) (target string, createdDir bool, err error) {
 	if dst == "" {
 		return filename, false, nil
@@ -132,13 +132,13 @@ func chooseLocalTarget(dst, filename string) (target string, createdDir bool, er
 		return dst, false, nil // file esistente
 	}
 	if os.IsNotExist(statErr) {
-		// Comportamento originale: crea directory e usa dst/filename
+		// Original behavior: create directory and use dst/filename.
 		if mkErr := os.MkdirAll(dst, 0o755); mkErr != nil {
 			return "", false, mkErr
 		}
 		return filepath.Join(dst, filename), true, nil
 	}
-	// altro errore su Stat → propaga (ma il chiamante fa skip)
+	// For any other Stat error, propagate it (the caller skips it).
 	return "", false, statErr
 }
 
@@ -156,7 +156,7 @@ func extractPaths(body []byte) ([]string, error) {
 	if err := json.Unmarshal(body, &raw); err != nil {
 		return nil, fmt.Errorf("invalid json: %w", err)
 	}
-	// ID specificato → singolo oggetto
+	// If an ID is specified, return a single object.
 	if _, has := raw["content"]; !has {
 		if spec, ok := raw["spec"].(map[string]interface{}); ok {
 			if path, _ := spec["path"].(string); path != "" {

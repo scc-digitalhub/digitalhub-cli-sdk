@@ -103,7 +103,7 @@ func TestGetByIDAndName(t *testing.T) {
 		t.Fatalf("json unmarshal (by name) failed: %v", err)
 	}
 
-	// Se Get-by-name torna una "lista" con content, prendiamo il first (come fa l'adapter)
+	// If Get-by-name returns a "list" with content, take the first item (as the adapter does).
 	if _, ok := mName["content"]; ok {
 		var err error
 		mName, err = getFirstFromList(mName)
@@ -128,7 +128,7 @@ func TestGetByIDAndName(t *testing.T) {
 	}
 }
 
-// helper simile a utils.GetFirstIfList, ma locale al test per non importare utils
+// Helper similar to utils.GetFirstIfList, but local to the test to avoid importing utils.
 func getFirstFromList(m map[string]interface{}) (map[string]interface{}, error) {
 	if c, ok := m["content"].([]interface{}); ok && len(c) > 0 {
 		if mm, ok := c[0].(map[string]interface{}); ok {
